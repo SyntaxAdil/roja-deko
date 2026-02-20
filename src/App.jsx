@@ -62,22 +62,10 @@ const App = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const apiUrl = `https://islamicapi.com/api/v1/ramadan/?lat=${lat}&lon=${lon}&api_key=${apiKey}`;
-
-      const isDev = window.location.hostname === "localhost";
-
-      let data;
-      if (isDev) {
-        const res = await fetch(`https://corsproxy.io/?${apiUrl}`);
-        data = await res.json();
-      } else {
-        const res = await fetch(
-          `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`,
-        );
-        const json = await res.json();
-        data = JSON.parse(json.contents);
-      }
-
+      const res = await fetch(
+        `/api/api/v1/ramadan/?lat=${lat}&lon=${lon}&api_key=${apiKey}`,
+      );
+      const data = await res.json();
       setData(data.data.fasting);
     };
     fetchData();

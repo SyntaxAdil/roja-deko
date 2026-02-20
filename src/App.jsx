@@ -63,8 +63,9 @@ const App = () => {
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch(
-        `/api/ramadan?lat=${lat}&lon=${lon}&api_key=${apiKey}`,
+        `/api/v1/ramadan/?lat=${lat}&lon=${lon}&api_key=${apiKey}`,
       );
+
       const data = await res.json();
       setData(data.data.fasting);
     };

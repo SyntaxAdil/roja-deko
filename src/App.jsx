@@ -14,7 +14,9 @@ const TimeBlock = ({ value, unit }) => (
     >
       {value}
     </span>
-    <span className="text-[0.55rem] tracking-[0.25em] uppercase text-slate-600">{unit}</span>
+    <span className="text-[0.55rem] tracking-[0.25em] uppercase text-slate-600">
+      {unit}
+    </span>
   </div>
 );
 
@@ -22,14 +24,19 @@ const CountdownCard = ({ label, countdown }) => (
   <div className="relative overflow-hidden bg-gradient-to-br from-[#111827] to-[#0f172a] border border-slate-800 rounded-2xl p-8 md:p-12 flex-1 ">
     <div
       className="absolute -top-14 -right-14 w-48 h-48 rounded-full pointer-events-none"
-      style={{ background: "radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%)" }}
+      style={{
+        background:
+          "radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%)",
+      }}
     />
-    <p className="text-center text-[0.65rem] tracking-[0.3em] uppercase text-[#c9a96e] mb-7">{label}</p>
+    <p className="text-center text-[0.65rem] tracking-[0.3em] uppercase text-[#c9a96e] mb-7">
+      {label}
+    </p>
     <div className="flex justify-center items-center gap-3  ">
       <TimeBlock value={countdown.hours} unit="Hours" />
-      <span className="text-slate-700 font-light mb-5" >:</span>
+      <span className="text-slate-700 font-light mb-5">:</span>
       <TimeBlock value={countdown.minutes} unit="Minutes" />
-      <span className="text-slate-700 font-light mb-5" >:</span>
+      <span className="text-slate-700 font-light mb-5">:</span>
       <TimeBlock value={countdown.seconds} unit="Seconds" />
     </div>
     <p className="text-center mt-7 tracking-[0.5em] opacity-40">· · ☽ · ·</p>
@@ -38,8 +45,16 @@ const CountdownCard = ({ label, countdown }) => (
 
 const App = () => {
   const [data, setData] = useState([]);
-  const [sehriCountdown, setSehriCountdown] = useState({ hours: "00", minutes: "00", seconds: "00" });
-  const [iftariCountdown, setIftariCountdown] = useState({ hours: "00", minutes: "00", seconds: "00" });
+  const [sehriCountdown, setSehriCountdown] = useState({
+    hours: "00",
+    minutes: "00",
+    seconds: "00",
+  });
+  const [iftariCountdown, setIftariCountdown] = useState({
+    hours: "00",
+    minutes: "00",
+    seconds: "00",
+  });
 
   const apiKey = "qotSY9tHEDMCwCsj65SGSjCapiKhnXclgjKoDBFW2Ezg0xNg";
   const lat = "23.7908";
@@ -47,11 +62,23 @@ const App = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(
-        `https://corsproxy.io/?https://islamicapi.com/api/v1/ramadan/?lat=${lat}&lon=${lon}&api_key=${apiKey}`
-      );
-      const json = await res.json();
-      setData(json.data.fasting);
+      const apiUrl = `https://islamicapi.com/api/v1/ramadan/?lat=${lat}&lon=${lon}&api_key=${apiKey}`;
+
+      const isDev = window.location.hostname === "localhost";
+
+      let data;
+      if (isDev) {
+        const res = await fetch(`https://corsproxy.io/?${apiUrl}`);
+        data = await res.json();
+      } else {
+        const res = await fetch(
+          `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`,
+        );
+        const json = await res.json();
+        data = JSON.parse(json.contents);
+      }
+
+      setData(data.data.fasting);
     };
     fetchData();
   }, []);
@@ -68,7 +95,10 @@ const App = () => {
       const diff = target - now;
       return {
         hours: String(Math.floor(diff / 1000 / 3600)).padStart(2, "0"),
-        minutes: String(Math.floor(((diff / 1000) % 3600) / 60)).padStart(2, "0"),
+        minutes: String(Math.floor(((diff / 1000) % 3600) / 60)).padStart(
+          2,
+          "0",
+        ),
         seconds: String(Math.floor((diff / 1000) % 60)).padStart(2, "0"),
       };
     };
@@ -82,7 +112,8 @@ const App = () => {
         t.setHours(h, m, 0, 0);
         return t > now;
       });
-      if (nextSehur) setSehriCountdown(getCountdown(nextSehur.time.sahur, nextSehur.date));
+      if (nextSehur)
+        setSehriCountdown(getCountdown(nextSehur.time.sahur, nextSehur.date));
 
       const nextIftar = data.find((i) => {
         const [h, m] = i.time.iftar.split(":").map(Number);
@@ -90,7 +121,8 @@ const App = () => {
         t.setHours(h, m, 0, 0);
         return t > now;
       });
-      if (nextIftar) setIftariCountdown(getCountdown(nextIftar.time.iftar, nextIftar.date));
+      if (nextIftar)
+        setIftariCountdown(getCountdown(nextIftar.time.iftar, nextIftar.date));
     }, 1000);
 
     return () => clearInterval(interval);
@@ -106,29 +138,50 @@ const App = () => {
       `}</style>
 
       <div className="max-w-4xl mx-auto px-4 pb-16">
-
         <div className="text-center py-12">
-          <p className="text-[#c9a96e] opacity-85 mb-1" style={{ fontFamily: "Amiri, serif", fontSize: "clamp(1.4rem, 4vw, 2rem)" }}>
+          <p
+            className="text-[#c9a96e] opacity-85 mb-1"
+            style={{
+              fontFamily: "Amiri, serif",
+              fontSize: "clamp(1.4rem, 4vw, 2rem)",
+            }}
+          >
             رمضان المبارك
           </p>
-          <p className="text-[0.65rem] tracking-[0.35em] uppercase text-slate-500">Ramadan 1446 · Dhaka</p>
+          <p className="text-[0.65rem] tracking-[0.35em] uppercase text-slate-500">
+            Ramadan 1446 · Dhaka
+          </p>
         </div>
 
         <div className="flex  flex-col md:flex-row   gap-4 mb-10 ">
-          <CountdownCard label="Next Sehri Begins In" countdown={sehriCountdown} />
-          <CountdownCard label="Next Iftari Begins In" countdown={iftariCountdown} />
+          <CountdownCard
+            label="Next Sehri Begins In"
+            countdown={sehriCountdown}
+          />
+          <CountdownCard
+            label="Next Iftari Begins In"
+            countdown={iftariCountdown}
+          />
         </div>
 
         <div className="bg-[#0d1117] border border-slate-800 rounded-2xl overflow-hidden">
           <div className="px-6 py-5 border-b border-slate-800">
-            <p className="text-[0.65rem] tracking-[0.3em] uppercase text-slate-500">Fasting Schedule</p>
+            <p className="text-[0.65rem] tracking-[0.3em] uppercase text-slate-500">
+              Fasting Schedule
+            </p>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse" style={{ fontSize: "clamp(0.7rem, 2vw, 0.8rem)" }}>
+            <table
+              className="w-full border-collapse"
+              style={{ fontSize: "clamp(0.7rem, 2vw, 0.8rem)" }}
+            >
               <thead>
                 <tr className="bg-[#0f1923]">
                   {["Day", "Date", "Weekday", "Sehri", "Iftari"].map((h) => (
-                    <th key={h} className="px-5 py-4 text-left text-[0.6rem] tracking-[0.25em] uppercase text-slate-600 font-normal whitespace-nowrap">
+                    <th
+                      key={h}
+                      className="px-5 py-4 text-left text-[0.6rem] tracking-[0.25em] uppercase text-slate-600 font-normal whitespace-nowrap"
+                    >
                       {h}
                     </th>
                   ))}
@@ -147,7 +200,9 @@ const App = () => {
                       }`}
                     >
                       <td className="px-5 py-3 whitespace-nowrap">
-                        <span className={`tabular-nums text-[0.7rem] ${isToday ? "text-[#c9a96e]" : "text-slate-600"}`}>
+                        <span
+                          className={`tabular-nums text-[0.7rem] ${isToday ? "text-[#c9a96e]" : "text-slate-600"}`}
+                        >
                           {String(index + 1).padStart(2, "0")}
                         </span>
                         {isToday && (
@@ -156,10 +211,26 @@ const App = () => {
                           </span>
                         )}
                       </td>
-                      <td className={`px-5 py-3 whitespace-nowrap ${isToday ? "text-[#e8dcc8]" : "text-slate-500"}`}>{r.date}</td>
-                      <td className={`px-5 py-3 whitespace-nowrap ${isToday ? "text-[#e8dcc8]" : "text-slate-500"}`}>{r.day}</td>
-                      <td className={`px-5 py-3 whitespace-nowrap tabular-nums ${isToday ? "text-[#a0946e]" : "text-slate-600"}`}>{r.time.sahur} AM</td>
-                      <td className={`px-5 py-3 whitespace-nowrap tabular-nums ${isToday ? "text-[#a0946e]" : "text-slate-600"}`}>{r.time.iftar} PM</td>
+                      <td
+                        className={`px-5 py-3 whitespace-nowrap ${isToday ? "text-[#e8dcc8]" : "text-slate-500"}`}
+                      >
+                        {r.date}
+                      </td>
+                      <td
+                        className={`px-5 py-3 whitespace-nowrap ${isToday ? "text-[#e8dcc8]" : "text-slate-500"}`}
+                      >
+                        {r.day}
+                      </td>
+                      <td
+                        className={`px-5 py-3 whitespace-nowrap tabular-nums ${isToday ? "text-[#a0946e]" : "text-slate-600"}`}
+                      >
+                        {r.time.sahur} AM
+                      </td>
+                      <td
+                        className={`px-5 py-3 whitespace-nowrap tabular-nums ${isToday ? "text-[#a0946e]" : "text-slate-600"}`}
+                      >
+                        {r.time.iftar} PM
+                      </td>
                     </tr>
                   );
                 })}
@@ -168,8 +239,9 @@ const App = () => {
           </div>
         </div>
 
-        <p className="text-center mt-20 select-none">&copy; All rights reserve. <b>Abdur Rahman Adil</b></p>
-
+        <p className="text-center mt-20 select-none">
+          &copy; All rights reserve. <b>Abdur Rahman Adil</b>
+        </p>
       </div>
     </>
   );

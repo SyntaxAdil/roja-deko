@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @plugin "daisyui";
-body{
-  background: #2e2a2a ;
+@import url("https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=DM+Mono:wght@300;400;500&display=swap");
 
+body {
+  background: #0a0e1a;
+  font-family: "DM Mono", monospace;
+  color: #e8dcc8;
 }
